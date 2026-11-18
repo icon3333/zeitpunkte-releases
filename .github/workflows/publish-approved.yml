@@ -1,0 +1,44 @@
+name: Publish owner-approved signed APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval_ref:
+        description: Immutable approval bundle SHA256 (must be explicitly reviewed by the owner)
+        required: true
+        type: string
+
+# This public repository does not build or execute private source. The dispatch
+# only authorizes downloading a signed artifact and publishing it after checks.
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: owner-release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Locate Android verification tools
+        run: |
+          test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          test -x "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
+          printf '%s\n' "$ANDROID_HOME/build-tools/36.0.0" "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+      - name: Validate configuration and approval reference
+        env:
+          APPROVAL_REF: ${{ inputs.approval_ref }}
+          SOURCE_REPOSITORY: ${{ vars.CANDIDATE_REPOSITORY }}
+          SOURCE_WORKFLOW: ${{ vars.CANDIDATE_WORKFLOW }}
+          SOURCE_BRANCH: ${{ vars.CANDIDATE_BRANCH }}
+          EXPECTED_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+          EXPECTED_CERT_SHA256: ${{ vars.APPROVED_CERT_SHA256 }}
+          SIGNER_URL: ${{ vars.OWNER_SIGNER_URL }}
+          SIGNER_TOKEN: ${{ secrets.OWNER_SIGNER_TOKEN }}
+          SOURCE_READ_TOKEN: ${{ secrets.CANDIDATE_READ_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/publish_approved.py
