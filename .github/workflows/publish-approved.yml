@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Locate Android verification tools
+      - name: Locate Android signing and verification tools
         run: |
           test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
           test -x "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
@@ -37,8 +37,11 @@ jobs:
           SOURCE_BRANCH: ${{ vars.CANDIDATE_BRANCH }}
           EXPECTED_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
           EXPECTED_CERT_SHA256: ${{ vars.APPROVED_CERT_SHA256 }}
-          SIGNER_URL: ${{ vars.OWNER_SIGNER_URL }}
-          SIGNER_TOKEN: ${{ secrets.OWNER_SIGNER_TOKEN }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
           SOURCE_READ_TOKEN: ${{ secrets.CANDIDATE_READ_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 .github/scripts/publish_approved.py

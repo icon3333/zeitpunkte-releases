@@ -76,7 +76,58 @@ def sha256(path: Path) -> str:
 
 
 def run(*cmd: str) -> str:
-    return subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
+    # Avoid inheriting protected environment values in Android tooling.
+    android_env = {key: os.environ[key] for key in ("ANDROID_HOME", "ANDROID_SDK_ROOT") if key in os.environ}
+    return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL, env={"PATH": os.environ.get("PATH", ""), **android_env})
+
+
+def isolated_apksigner(candidate: Path, root: Path) -> Path:
+    """Sign using only the approved GitHub-hosted Android build-tools binary."""
+    keystore_b64 = required("ANDROID_KEYSTORE_BASE64")
+    keystore_password = required("ANDROID_KEYSTORE_PASSWORD")
+    key_alias = required("ANDROID_KEY_ALIAS")
+    key_password = required("ANDROID_KEY_PASSWORD")
+    signer = Path(os.environ.get("ANDROID_HOME", "")) / "build-tools" / "36.0.0" / "apksigner"
+    if not signer.is_file() or not os.access(signer, os.X_OK):
+        raise RuntimeError("GitHub-hosted apksigner not found in pinned Android build-tools")
+    keystore_data = b""
+    try:
+        import base64
+        keystore_data = base64.b64decode(keystore_b64, validate=True)
+    except (ValueError, TypeError):
+        raise RuntimeError("Protected keystore is not valid base64") from None
+    finally:
+        keystore_b64 = ""
+    keystore = root / "release.keystore"
+    try:
+        fd = os.open(keystore, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except BaseException:
+        keystore_data = b""
+        raise
+    try:
+        with os.fdopen(fd, "wb") as key_file:
+            key_file.write(keystore_data)
+    except BaseException:
+        keystore.unlink(missing_ok=True)
+        keystore_data = b""
+        raise
+    output = root / "signed.apk"
+    env = {"PATH": os.environ.get("PATH", ""), "ANDROID_HOME": os.environ.get("ANDROID_HOME", ""), "ANDROID_SDK_ROOT": os.environ.get("ANDROID_SDK_ROOT", ""), "HOME": str(root)}
+    signer_env = {**env, "ANDROID_KEYSTORE_PASSWORD": keystore_password, "ANDROID_KEY_ALIAS": key_alias, "ANDROID_KEY_PASSWORD": key_password}
+    try:
+        subprocess.run([str(signer), "sign", "--ks", str(keystore), "--ks-pass", "env:ANDROID_KEYSTORE_PASSWORD", "--ks-key-alias", key_alias, "--key-pass", "env:ANDROID_KEY_PASSWORD", "--out", str(output), str(candidate)], check=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=signer_env)
+    except (subprocess.CalledProcessError, OSError):
+        raise RuntimeError("Isolated apksigner failed") from None
+    finally:
+        # Remove decoded key material promptly; TemporaryDirectory cleans remaining files.
+        keystore.unlink(missing_ok=True)
+        keystore_data = b""
+        keystore_password = key_alias = key_password = ""
+        for name in ("ANDROID_KEYSTORE_PASSWORD", "ANDROID_KEY_ALIAS", "ANDROID_KEY_PASSWORD"):
+            signer_env.pop(name, None)
+    if not output.is_file():
+        raise RuntimeError("Isolated apksigner produced no signed APK")
+    return output
 
 
 def verify_apk(path: Path, package: str, cert: str, *, previous=False) -> dict:
@@ -111,13 +162,10 @@ def main():
         raise RuntimeError("approval_ref must be a SHA-256 digest")
     repo, workflow, branch = (required(k) for k in ("SOURCE_REPOSITORY", "SOURCE_WORKFLOW", "SOURCE_BRANCH"))
     package, cert = required("EXPECTED_PACKAGE"), required("EXPECTED_CERT_SHA256")
-    signer_url, signer_token = required("SIGNER_URL"), required("SIGNER_TOKEN")
     source_token, gh = required("SOURCE_READ_TOKEN"), required("GH_TOKEN")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
         raise RuntimeError("Invalid configured candidate repository")
-    parsed_signer = urllib.parse.urlsplit(signer_url)
-    if parsed_signer.scheme != "https" or not parsed_signer.hostname or parsed_signer.username or parsed_signer.password or parsed_signer.query or parsed_signer.fragment or parsed_signer.path not in ("", "/"):
-        raise RuntimeError("Signer endpoint must be an HTTPS origin/path without credentials, query or fragment")
+
     source_repo = urllib.parse.quote(repo, safe="/")
     runs = api_json(f"/repos/{source_repo}/actions/workflows/{urllib.parse.quote(workflow, safe='')}/runs?branch={urllib.parse.quote(branch, safe='')}&status=success&per_page=100", source_token)
     candidates = [r for r in runs.get("workflow_runs", []) if r.get("status") == "completed" and r.get("conclusion") == "success" and r.get("head_branch") == branch and r.get("head_sha", "")]
@@ -161,10 +209,7 @@ def main():
             raise RuntimeError("Candidate package/version invalid or not newer than latest release APK")
         if run("apkanalyzer", "manifest", "debuggable", str(candidate)).strip() != "false":
             raise RuntimeError("Debuggable candidate APK rejected")
-        sign_req_url = signer_url.rstrip("/") + "/sign"
-        signed, _ = request(sign_req_url, signer_token, "application/vnd.android.package-archive", candidate_data, "POST")
-        signed_path = root / "signed.apk"
-        signed_path.write_bytes(signed)
+        signed_path = isolated_apksigner(candidate, root)
         info = verify_apk(signed_path, package, cert)
         if info != {"package": package, "versionCode": int(cm.group(2)), "versionName": cm.group(3)}:
             raise RuntimeError("Signer output package/version differs from original candidate")
@@ -185,7 +230,7 @@ def main():
                 raise
         release = api_json(f"/repos/{public_repo}/releases", gh, {"tag_name": tag, "name": tag, "draft": True, "prerelease": False, "target_commitish": "main", "body": "Owner-approved signed release."}, "POST")
         upload_url = release["upload_url"].split("{", 1)[0] + "?name=zeitpunkte.apk"
-        asset_raw, _ = request(upload_url, gh, "application/vnd.github+json", signed, "POST")
+        asset_raw, _ = request(upload_url, gh, "application/vnd.github+json", signed_path.read_bytes(), "POST")
         asset = json.loads(asset_raw)
         readback, _ = request(asset["url"], gh, "application/octet-stream")
         readback_path = root / "readback.apk"
