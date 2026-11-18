@@ -1,19 +1,39 @@
 # Zeitpunkte
 
-Zeitpunkte zeigt als Punktraster, wie viel vom Tag, Monat, Jahr oder einer gewählten Lebensspanne vergangen ist. Die Android-App bringt ein Widget für den Startbildschirm mit und benötigt Android 12 oder neuer.
+![Illustrierte Vorschau der Jahresansicht von Zeitpunkte: Ein Raster aus hellen und dunklen Punkten zeigt, wie viel vom Jahr vergangen ist. Kein Geräte-Screenshot.](docs/assets/overview.png)
 
-## Installieren und aktualisieren
+<sub>Illustrierte Vorschau · kein Geräte-Screenshot</sub>
+
+**[APK herunterladen](https://github.com/icon3333/zeitpunkte-releases/releases/latest)** · **[Mit Obtainium installieren](#mit-obtainium-installieren)** · Android 12 oder neuer
+
+### Vier Ansichten, ein Punktraster
+
+| Ansicht | Ein Punkt steht für |
+| --- | --- |
+| **Tag** | eine Stunde |
+| **Monat** | einen Tag im Monat |
+| **Jahr** | einen Tag im Jahr |
+| **Leben** | eine Woche innerhalb einer selbst gewählten Lebensspanne |
+
+Helle Punkte zeigen vergangene Zeit. Ein umrandeter Punkt markiert den aktuellen Abschnitt. Das Raster gibt es auch als Widget für den Android-Startbildschirm.
+
+## Mit Obtainium installieren
 
 1. In [Obtainium](https://obtainium.imranr.dev/) **App hinzufügen** öffnen.
-2. `https://github.com/icon3333/zeitpunkte-releases` als Quelle einfügen. Ein GitHub-Konto oder Token ist dafür nicht nötig.
-3. Die App installieren. Falls Android danach fragt, Installationen aus Obtainium erlauben.
+2. `https://github.com/icon3333/zeitpunkte-releases` als Quelle einfügen.
+3. **Installieren** wählen. Falls Android danach fragt, Installationen aus Obtainium erlauben.
 
-Ohne Obtainium: Die regulär signierte `.apk` unter [Releases](https://github.com/icon3333/zeitpunkte-releases/releases/latest) herunterladen, nicht das Quellcode-Archiv.
+Die Quelle ist öffentlich und benötigt kein GitHub-Konto. Obtainium findet neue Versionen über dieselbe URL. Alternativ unter [Releases](https://github.com/icon3333/zeitpunkte-releases/releases/latest) die signierte `.apk` laden, nicht das Quellcode-Archiv.
 
-**Schon die Debug-Testversion installiert?** Android akzeptiert eine APK mit anderer Signatur nicht als Update. Bei einem Signaturkonflikt abbrechen. Eine Deinstallation löscht die lokalen App-Daten.
+<details>
+<summary>Schon eine alte Debug-Testversion installiert?</summary>
+
+Android akzeptiert keine Updates mit einer anderen Signatur. Bei einem Signaturkonflikt abbrechen: Eine Deinstallation löscht die lokalen App-Daten.
+
+</details>
 
 ## Datenschutz
 
 Die App braucht kein Konto und hat keine Internetberechtigung. Eingaben wie Geburtsdatum und Zielalter bleiben in den App-Daten auf dem Gerät.
 
-Dieses Repository enthält nur Downloads. Der Quellcode der App ist hier nicht veröffentlicht.
+Dieses Repository dient der Verteilung von Zeitpunkte. Der Quellcode der App ist nicht veröffentlicht.
