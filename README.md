@@ -4,13 +4,11 @@ Zeitpunkte zeigt als Punktraster, wie viel vom Tag, Monat, Jahr oder einer gewä
 
 ## Installieren und aktualisieren
 
-> **Hinweis zu v0.1.0:** Im öffentlichen Release liegt zurzeit nur `zeitpunkte-0.1.0-pilot.apk`. Das ist eine Debug-Testversion. Warte auf die regulär signierte APK, wenn du Zeitpunkte über Obtainium installieren und später ohne Neuinstallation aktualisieren möchtest.
-
-1. Sobald die regulär signierte APK verfügbar ist, in [Obtainium](https://obtainium.imranr.dev/) **App hinzufügen** öffnen.
+1. In [Obtainium](https://obtainium.imranr.dev/) **App hinzufügen** öffnen.
 2. `https://github.com/icon3333/zeitpunkte-releases` als Quelle einfügen. Ein GitHub-Konto oder Token ist dafür nicht nötig.
 3. Die App installieren. Falls Android danach fragt, Installationen aus Obtainium erlauben.
 
-Ohne Obtainium: Die regulär signierte `.apk` unter [Releases](https://github.com/icon3333/zeitpunkte-releases/releases/latest) herunterladen, nicht das Quellcode-Archiv oder eine Datei mit `-pilot` im Namen.
+Ohne Obtainium: Die regulär signierte `.apk` unter [Releases](https://github.com/icon3333/zeitpunkte-releases/releases/latest) herunterladen, nicht das Quellcode-Archiv.
 
 **Schon die Debug-Testversion installiert?** Android akzeptiert eine APK mit anderer Signatur nicht als Update. Bei einem Signaturkonflikt abbrechen. Eine Deinstallation löscht die lokalen App-Daten.
 
