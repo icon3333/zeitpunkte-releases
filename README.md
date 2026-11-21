@@ -2,9 +2,9 @@
 
 # Zeitpunkte
 
-**Zeit auf einen Blick.**
+**Sieh auf einen Blick, wie viel Zeit dir noch bleibt.**
 
-Sieh, wie viel vom Tag, Monat, Jahr oder deiner gewählten Lebensspanne vergangen ist. Als Android-App und Widget für den Startbildschirm.
+Zeitpunkte macht deinen Tag, Monat, dein Jahr oder deine gewählte Lebensspanne als Punktraster sichtbar – in der Android-App und direkt auf deinem Startbildschirm.
 
 **[APK herunterladen](https://github.com/icon3333/zeitpunkte-releases/releases/latest)** · [Mit Obtainium installieren](#mit-obtainium-installieren) · [Datenschutz](#datenschutz)
 
