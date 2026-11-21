@@ -1,12 +1,20 @@
+<div align="center">
+
 # Zeitpunkte
+
+**Zeit auf einen Blick.**
+
+Sieh, wie viel vom Tag, Monat, Jahr oder deiner gewählten Lebensspanne vergangen ist. Als Android-App und Widget für den Startbildschirm.
+
+**[APK herunterladen](https://github.com/icon3333/zeitpunkte-releases/releases/latest)** · [Mit Obtainium installieren](#mit-obtainium-installieren) · [Datenschutz](#datenschutz)
 
 ![Illustrierte Vorschau der Jahresansicht von Zeitpunkte: Ein Raster aus hellen und dunklen Punkten zeigt, wie viel vom Jahr vergangen ist. Kein Geräte-Screenshot.](docs/assets/overview.png)
 
-<sub>Illustrierte Vorschau · kein Geräte-Screenshot</sub>
+<sub>Illustrierte Jahresansicht, kein Geräte-Screenshot.</sub>
 
-**[APK herunterladen](https://github.com/icon3333/zeitpunkte-releases/releases/latest)** · **[Mit Obtainium installieren](#mit-obtainium-installieren)** · Android 12 oder neuer
+</div>
 
-### Vier Ansichten, ein Punktraster
+## Vier Ansichten, ein Punktraster
 
 | Ansicht | Ein Punkt steht für |
 | --- | --- |
@@ -18,6 +26,8 @@
 Helle Punkte zeigen vergangene Zeit. Ein umrandeter Punkt markiert den aktuellen Abschnitt. Das Raster gibt es auch als Widget für den Android-Startbildschirm.
 
 ## Mit Obtainium installieren
+
+Voraussetzung: **Android 12 oder neuer**.
 
 1. In [Obtainium](https://obtainium.imranr.dev/) **App hinzufügen** öffnen.
 2. `https://github.com/icon3333/zeitpunkte-releases` als Quelle einfügen.
