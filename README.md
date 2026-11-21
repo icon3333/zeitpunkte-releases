@@ -1,5 +1,7 @@
 # Zeitpunkte
 
+**Sieh auf einen Blick, wie viel Zeit dir noch bleibt.** Zeitpunkte macht deinen Tag, Monat, dein Jahr oder deine gewählte Lebensspanne als Punktraster sichtbar – in der Android-App und direkt auf deinem Startbildschirm.
+
 ![Illustrierte Vorschau der Jahresansicht von Zeitpunkte: Ein Raster aus hellen und dunklen Punkten zeigt, wie viel vom Jahr vergangen ist. Kein Geräte-Screenshot.](docs/assets/overview.png)
 
 <sub>Illustrierte Vorschau · kein Geräte-Screenshot</sub>
